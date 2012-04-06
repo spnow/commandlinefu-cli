@@ -5,7 +5,7 @@ VERSION = 0.1
 
 import sys
 import getopt
-from urllib2 import urlopen
+from urllib2 import urlopen, URLError
 from base64 import b64encode
 from json import loads
 
@@ -41,16 +41,28 @@ def main():
             option  = 3
 
     if option == 1:
-        rjson = urlopen("http://www.commandlinefu.com/commands/browse/sort-by-votes/json")
-        rjson = rjson.read()
+        try:
+            rjson = urlopen("http://www.commandlinefu.com/commands/browse/sort-by-votes/json")
+            rjson = rjson.read()
+        except URLError, err:
+            print str(err)
+            sys.exit(1)
     elif option == 2:
-        rjson = urlopen("http://commandlinefu.com/commands/matching/"+command
-                        +"/"+b64encode(command)+"/json")
-        rjson = rjson.read()
+        try:
+            rjson = urlopen("http://commandlinefu.com/commands/matching/"+command
+                            +"/"+b64encode(command)+"/json")
+            rjson = rjson.read()
+        except URLError, err:
+            print str(err)
+            sys.exit(1)
     elif option == 3:
-        rjson = urlopen("http://commandlinefu.com/commands/tagged/163/"+command
-                        +"/json")
-        rjson = rjson.read()
+        try:
+            rjson = urlopen("http://commandlinefu.com/commands/tagged/163/"+command
+                            +"/json")
+            rjson = rjson.read()
+        except URLError, err:
+            print str(err)
+            sys.exit(1)
 
     if rjson == "[]":
         print "[-] command not found"

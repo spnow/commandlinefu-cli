@@ -11,12 +11,14 @@ from json import loads
 
 def main():
 
+    option = 0
+
     if(len(sys.argv)<2):
         usage()
         sys.exit(1)
     
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hac:v", ["help", "all", "command="])
+        opts, args = getopt.getopt(sys.argv[1:], "hac:t:v", ["help", "all", "command=", "tagged"])
     except getopt.GetoptError, err:
         print str(err)
         usage()
@@ -30,19 +32,24 @@ def main():
             usage()
             sys.exit(0)
         elif o in ("-a", "--all"):
-            command = ""
+            option = 1
         elif o in ("-c", "--command"):
             command = a
-            stat = 2
-        else:
-            assert False, "unhandled option"
+            option  = 2
+        elif o in ("-t", "--tagged"):
+            command = a
+            option  = 3
 
-    if not command:
+    if option == 1:
         rjson = urlopen("http://www.commandlinefu.com/commands/browse/sort-by-votes/json")
         rjson = rjson.read()
-    elif command:
+    elif option == 2:
         rjson = urlopen("http://commandlinefu.com/commands/matching/"+command
                         +"/"+b64encode(command)+"/json")
+        rjson = rjson.read()
+    elif option == 3:
+        rjson = urlopen("http://commandlinefu.com/commands/tagged/163/"+command
+                        +"/json")
         rjson = rjson.read()
 
     if rjson == "[]":
@@ -54,8 +61,6 @@ def main():
 def print_json(rjson):
     data = loads(rjson)
     for i in range(0,len(data)):
-        #url     = data[i]["url"]
-        #id      = data[i]["id"]
         votes   = data[i]["votes"]
         cmd     = data[i]["command"]
         summary = data[i]["summary"]
@@ -66,7 +71,8 @@ def usage():
         "-c <command>":"\tSearch for specific command",
         "-v":"\t\tVersion",
         "-a":"\t\tShow latest commandlinefu submissions",
-        "-h":"\t\tShow help"
+        "-h":"\t\tShow help",
+        "-t <command>":"\tSearch for tagged commands"
         }
     print "Usage : %s" % sys.argv[0]
     for options in commands:

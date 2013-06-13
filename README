@@ -1,1 +1,6 @@
 A simple cli for commandlinefu.com in python
+Usage : commandlinefu-cli.py
+	-t <command>	Search for tagged commands
+	-c <command>	Search for specific command
+	-a		Show latest commandlinefu submissions
+	-h		Show help
